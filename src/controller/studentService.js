@@ -4,6 +4,38 @@ const {
 } = require("../config/redisClient");
 
 
+async function getStudentById(id) {
+
+    const cacheKey = `students:${id}`;
+
+    const cachedStudent =
+        await redisClient.get(cacheKey);
+
+    if (cachedStudent) {
+
+        console.log("STUDENT CACHE HIT");
+
+        return JSON.parse(cachedStudent);
+    }
+
+    console.log("STUDENT CACHE MISS");
+
+    const student =
+        await axiosAPI.getStudentById(id);
+
+    if (!student) {
+        return null;
+    }
+
+    await redisClient.setEx(
+        cacheKey,
+        120,
+        JSON.stringify(student)
+    );
+
+    return student;
+}
+
 async function getAllStudents() {
     const cacheKey = "students:all";
 
@@ -27,7 +59,7 @@ async function getAllStudents() {
 
     await redisClient.setEx(
         cacheKey,
-        120,
+        240,
         JSON.stringify(students)
     );
 
@@ -61,5 +93,5 @@ async function createStudentWithSubject({
 
 
 module.exports = {
-    createStudentWithSubject, getAllStudents
+    createStudentWithSubject, getAllStudents,getStudentById
 };

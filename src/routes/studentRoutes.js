@@ -9,6 +9,34 @@ const studentService = require("../controller/studentService");
 
 const router = express.Router();
 
+router.get("/students/:id", async (req, res) => {
+
+    try {
+
+        const id = Number(req.params.id);
+
+        const student =
+            await studentService.getStudentById(id);
+
+        if (!student) {
+            return res.status(404)
+                .send("Student not found");
+        }
+
+        res.render("studentDetails.njk", {
+            student
+        });
+
+    } catch (error) {
+
+        console.error(error);
+
+        res.status(500).send(
+            "Unable to retrieve student"
+        );
+    }
+});
+
 router.get("/students", async (req, res) => {
 
     try {

@@ -73,7 +73,7 @@ describe("studentService", () => {
                 redisClient.setEx
             ).toHaveBeenCalledWith(
                 "students:all",
-                120,
+                240,
                 JSON.stringify(students)
             );
         });
