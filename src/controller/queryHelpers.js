@@ -1,7 +1,12 @@
 const axios = require("axios");
-const GRAPHQL_URL = "http://localhost:8080/graphql";
+require('dotenv').config();
+
+const JAVA_API_URL = "http://localhost:8080/graphql";
+
 
 async function getAllStudents() {
+
+
     const query = `
     query {
       getAllStudents {
@@ -21,7 +26,7 @@ async function getAllStudents() {
     }
   `;
 
-    const response = await axios.post(GRAPHQL_URL, {
+    const response = await axios.post(JAVA_API_URL, {
         query
     });
 
@@ -73,7 +78,7 @@ async function createStudentWithSubject(
         }
     `;
 
-    const response = await axios.post(GRAPHQL_URL, {
+    const response = await axios.post(JAVA_API_URL, {
         query: mutation,
         variables: {
             name,

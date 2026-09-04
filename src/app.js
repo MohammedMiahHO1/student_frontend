@@ -2,6 +2,7 @@ const express = require("express");
 const nunjucks = require("nunjucks");
 
 const studentRoutes = require("./routes/studentRoutes");
+const { connectRedis } = require("./config/redisClient");
 
 const app = express();
 const path = require("path");

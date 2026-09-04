@@ -52,7 +52,23 @@ describe("query api calls to graphql", () => {
         ).toHaveBeenCalledTimes(1);
     });
 
-    test("throws error when GraphQL returns an error", async () => {
+    test("getAllStudents returns empty array when no students exist", async () => {
+
+        axios.post.mockResolvedValue({
+            data: {
+                data: {
+                    getAllStudents: []
+                }
+            }
+        });
+
+        const result =
+            await queryHelpers.getAllStudents();
+
+        expect(result).toEqual([]);
+    });
+
+    test("throws error when GraphQL returns an error get all students", async () => {
 
         axios.post.mockResolvedValue({
             data: {
@@ -103,7 +119,7 @@ describe("query api calls to graphql", () => {
         expect(result)
             .toEqual(createdStudent);
     });
-    test("throws error when axios request fails", async () => {
+    test("throws error when axios request fails create subject with student", async () => {
 
         axios.post.mockRejectedValue(
             new Error("Network Error")
@@ -122,8 +138,20 @@ describe("query api calls to graphql", () => {
             "Network Error"
         );
     });
+    test("getAllStudents throws error when axios request fails", async () => {
 
-    test("throws error when GraphQL returns an error", async () => {
+        axios.post.mockRejectedValue(
+            new Error("Network Error")
+        );
+
+        await expect(
+            queryHelpers.getAllStudents()
+        ).rejects.toThrow(
+            "Network Error"
+        );
+    });
+
+    test("throws error when GraphQL returns an error for create student with subjects", async () => {
 
         axios.post.mockResolvedValue({
             data: {
