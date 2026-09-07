@@ -4,6 +4,23 @@ const {
 } = require("../config/redisClient");
 
 
+async function updateStudentSubject(
+    studentId,
+    studentSubjectId,
+    subject,
+    grade
+) {
+
+    const updatedStudentSubject = await axiosAPI.updateStudentSubject(
+        studentSubjectId,
+        subject,
+        grade
+    );
+    await redisClient.del(`student:${studentId}`);
+
+    return updatedStudentSubject;
+}
+
 async function getStudentById(id) {
 
     const cacheKey = `student:${id}`;
@@ -93,5 +110,5 @@ async function createStudentWithSubject({
 
 
 module.exports = {
-    createStudentWithSubject, getAllStudents,getStudentById
+    createStudentWithSubject, getAllStudents,getStudentById, updateStudentSubject
 };

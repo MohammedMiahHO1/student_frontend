@@ -4,6 +4,58 @@ require('dotenv').config();
 const JAVA_API_URL = "http://localhost:8080/graphql";
 
 
+
+async function updateStudentSubject(
+    studentSubjectId,
+    subject,
+    grade
+) {
+
+    const query = `
+        mutation UpdateStudentSubject(
+            $studentSubjectId: ID!,
+            $subject: String!,
+            $grade: Float!
+        ) {
+            updateStudentSubject(
+                studentSubjectId: $studentSubjectId,
+                subject: $subject,
+                grade: $grade
+            ) {
+                id
+                grade
+                subject {
+                    id
+                    name
+                }
+            }
+        }
+    `;
+
+    const variables = {
+        studentSubjectId,
+        subject,
+        grade
+    };
+
+    const response =
+        await axios.post(
+            JAVA_API_URL,
+            {
+                query,
+                variables
+            }
+        );
+
+    if (response.data.errors) {
+        throw new Error(
+            response.data.errors[0].message
+        );
+    }
+
+    return response.data.data.updateStudentSubject;
+}
+
 async function getAllStudents() {
 
 
@@ -139,5 +191,5 @@ async function getStudentById(id) {
 }
 
 module.exports = {
-    createStudentWithSubject, getAllStudents, getStudentById
+    createStudentWithSubject, getAllStudents, getStudentById,updateStudentSubject
 }

@@ -9,6 +9,77 @@ const studentService = require("../controller/studentService");
 
 const router = express.Router();
 
+
+
+router.post("/students/:id/edit-subject", async (req, res) => {
+
+    try {
+
+        const studentId = req.params.id;
+
+        const {
+            studentSubjectId,
+            subject,
+            grade
+        } = req.body;
+        console.log({
+            studentId,
+            studentSubjectId,
+            subject,
+            grade
+        });
+
+        await studentService.updateStudentSubject(
+            Number(studentId),
+            Number(studentSubjectId),
+            subject,
+            Number(grade)
+        );
+
+        res.redirect(`/students/${studentId}`);
+
+    } catch (error) {
+
+        console.error(error);
+
+        res.status(500)
+            .send("Something went wrong");
+    }
+});
+
+router.get("/students/:id/edit", async (req, res) => {
+
+    try {
+
+        const studentId = req.params.id;
+
+        const student =
+            await studentService.getStudentById(studentId);
+
+        if (!student) {
+            return res.status(404)
+                .send("Student not found");
+        }
+
+        res.render("editStudent.njk", {
+            student
+        });
+
+    } catch (error) {
+
+        console.error(error);
+
+        res.status(500)
+            .send("Something went wrong");
+    }
+});
+
+
+router.get("/students/add", async (req, res) => {
+    res.render("addStudent.njk");
+});
+
+
 router.get("/students/:id", async (req, res) => {
 
     try {
@@ -54,9 +125,6 @@ router.get("/students", async (req, res) => {
     }
 });
 
-router.get("/students/add", async (req, res) => {
-    res.render("addStudent.njk");
-});
 
 router.post("/students", async (req, res) => {
 

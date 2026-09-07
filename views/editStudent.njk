@@ -1,0 +1,38 @@
+<h1>Update Student Subject</h1>
+
+{% for studentSubject in student.subjects %}
+
+    <form
+        action="/students/{{ student.rollNo }}/edit-subject"
+        method="POST"
+    >
+
+        <input
+            type="hidden"
+            name="studentSubjectId"
+            value="{{ studentSubject.id }}"
+        >
+
+        <label>Subject</label>
+
+        <input
+            type="text"
+            name="subject"
+            value="{{ studentSubject.subject.name }}"
+        >
+
+        <label>Grade</label>
+
+        <input
+            type="number"
+            name="grade"
+            value="{{ studentSubject.grade }}"
+        >
+
+        <button type="submit">
+            Update Subject
+        </button>
+
+    </form>
+
+{% endfor %}
