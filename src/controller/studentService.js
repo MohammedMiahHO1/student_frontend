@@ -6,7 +6,7 @@ const {
 
 async function getStudentById(id) {
 
-    const cacheKey = `students:${id}`;
+    const cacheKey = `student:${id}`;
 
     const cachedStudent =
         await redisClient.get(cacheKey);
