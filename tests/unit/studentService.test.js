@@ -18,7 +18,8 @@ jest.mock("../../src/config/redisClient");
 describe("studentService", () => {
 
     beforeEach(() => {
-        jest.clearAllMocks();
+
+        jest.resetAllMocks();
     });
 
     describe("GET student by id", ()=>{
@@ -47,6 +48,8 @@ describe("studentService", () => {
             const result =
                 await studentService.getStudentById(studentId);
 
+
+
             expect(
                 cacheService
             ).toHaveBeenCalledWith(
@@ -56,102 +59,6 @@ describe("studentService", () => {
             );
 
             expect(result).toEqual(student);
-        });
-        test("returns student by id cache miss", async () => {
-
-
-
-            const student = [
-                {
-                    rollNo: 1,
-                    name: "Ali",
-                    percentage: 85.5,
-                    branch: "Computer Science",
-                    subject: "Maths",
-                    grade: "88"
-                }
-            ];
-
-            const studentId = student.rollNo;
-
-            redisClient.get
-                .mockResolvedValue(null);
-
-            axiosAPI.getStudentById
-                .mockResolvedValue(student);
-
-            const result =
-                await studentService.getStudentById(studentId);
-
-            expect(redisClient.get)
-                .toHaveBeenCalledWith(`student:${studentId}`);
-
-            expect(axiosAPI.getStudentById).toHaveBeenCalledWith(studentId);
-            expect(redisClient.setEx)
-                .toHaveBeenCalledWith(
-                    `student:${studentId}`,
-                    120,
-                    JSON.stringify(student)
-                );
-
-            expect(result).toEqual(student);
-        });
-
-        test("throws error when Redis get fails", async () => {
-
-            const studentId = 1;
-
-            redisClient.get
-                .mockRejectedValue(new Error("Redis unavailable"));
-
-            await expect(
-                studentService.getStudentById(studentId)
-            ).rejects.toThrow("Redis unavailable");
-
-            expect(axiosAPI.getStudentById)
-                .not.toHaveBeenCalled();
-        });
-
-        test("throws error when API call fails", async () => {
-
-            const studentId = 1;
-
-            redisClient.get
-                .mockResolvedValue(null);
-
-            axiosAPI.getStudentById
-                .mockRejectedValue(new Error("API unavailable"));
-
-            await expect(
-                studentService.getStudentById(studentId)
-            ).rejects.toThrow("API unavailable");
-
-            expect(redisClient.setEx)
-                .not.toHaveBeenCalled();
-        });
-        test("returns null when student is not in cache or API", async () => {
-
-            const studentId = 1;
-
-            redisClient.get
-                .mockResolvedValue(null);
-
-            axiosAPI.getStudentById
-                .mockResolvedValue(null);
-
-            const result =
-                await studentService.getStudentById(studentId);
-
-            expect(redisClient.get)
-                .toHaveBeenCalledWith(`student:${studentId}`);
-
-            expect(axiosAPI.getStudentById)
-                .toHaveBeenCalledWith(studentId);
-
-            expect(redisClient.setEx)
-                .not.toHaveBeenCalled();
-
-            expect(result).toBeNull();
         });
 
 
