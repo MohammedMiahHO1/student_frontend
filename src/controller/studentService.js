@@ -32,34 +32,12 @@ async function getStudentById(id) {
 }
 
 async function getAllStudents() {
-    const cacheKey = "students:all";
 
-
-    const cachedStudents =
-        await redisClient.get(cacheKey);
-
-    if (cachedStudents) {
-
-        console.log("CACHE HIT");
-
-        return JSON.parse(cachedStudents);
-    }
-
-    console.log("CACHE MISS");
-
-
-    const students =
-        await axiosAPI.getAllStudents();
-
-
-    await redisClient.setEx(
-        cacheKey,
-        240,
-        JSON.stringify(students)
+    return redisCacheService(
+        "students:all",
+        120,
+        () => axiosAPI.getStudentById(id)
     );
-
-
-    return students;
 
 
 }
