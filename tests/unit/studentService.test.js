@@ -3,7 +3,7 @@ const axiosAPI =
 
 const studentService =
     require("../../src/controller/studentService");
-const cacheService =
+const {cacheService,deleteCache} =
     require("../../src/cache/cacheService");
 
 const {
@@ -102,6 +102,7 @@ describe("studentService", () => {
 
             axiosAPI.createStudentWithSubject
                 .mockResolvedValue(createdStudent);
+            deleteCache.mockResolvedValue();
 
             const result =
                 await studentService.createStudentWithSubject({
@@ -122,7 +123,7 @@ describe("studentService", () => {
                 90
             );
             expect(
-                redisClient.del
+                deleteCache
             ).toHaveBeenCalledWith(
                 "students:all"
             );

@@ -37,6 +37,10 @@ async function cacheService(
     return data;
 }
 
+async function deleteCache(cacheKey) {
+    await redisClient.del(cacheKey);
+}
+
 
 module.exports =
-    cacheService;
+    {cacheService,deleteCache};

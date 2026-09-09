@@ -1,8 +1,6 @@
 const axiosAPI = require("../controller/queryHelpers");
-const {
-    redisClient
-} = require("../config/redisClient");
-const redisCacheService = require('../cache/cacheService');
+
+const {cacheService,deleteCache} = require('../cache/cacheService');
 
 
 async function updateStudentSubject(
@@ -17,14 +15,14 @@ async function updateStudentSubject(
         subject,
         grade
     );
-    await redisClient.del(`student:${studentId}`);
+    await deleteCache(`student:${studentId}`);
 
     return updatedStudentSubject;
 }
 
 async function getStudentById(id) {
 
-    return redisCacheService(
+    return cacheService(
             `student:${id}`,
             120,
             () => axiosAPI.getStudentById(id)
@@ -33,7 +31,7 @@ async function getStudentById(id) {
 
 async function getAllStudents() {
 
-    return redisCacheService(
+    return cacheService(
         "students:all",
         120,
         () => axiosAPI.getStudentById(id)
@@ -59,7 +57,7 @@ async function createStudentWithSubject({
         grade
     );
 
-    await redisClient.del("students:all");
+    await deleteCache("students:all");
     return student
 
 }
