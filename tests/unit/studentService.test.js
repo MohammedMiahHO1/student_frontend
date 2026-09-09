@@ -3,12 +3,16 @@ const axiosAPI =
 
 const studentService =
     require("../../src/controller/studentService");
+const cacheService =
+    require("../../src/cache/cacheService");
 
-jest.mock("../../src/controller/queryHelpers");
 const {
     redisClient
 } = require("../../src/config/redisClient");
 
+
+jest.mock("../../src/controller/queryHelpers");
+jest.mock("../../src/cache/cacheService");
 jest.mock("../../src/config/redisClient");
 
 describe("studentService", () => {
@@ -22,7 +26,7 @@ describe("studentService", () => {
 
 
 
-            const student = [
+            const student =
                 {
                     rollNo: 1,
                     name: "Ali",
@@ -31,20 +35,25 @@ describe("studentService", () => {
                     subject: "Maths",
                     grade: "88"
                 }
-            ];
+
 
             const studentId = student.rollNo;
 
-            redisClient.get
-                .mockResolvedValue(JSON.stringify(student));
+
+
+            cacheService.mockResolvedValue(student)
 
 
             const result =
                 await studentService.getStudentById(studentId);
 
-            expect(redisClient.get).toHaveBeenCalledWith(`student:${studentId}`);
-
-            expect(axiosAPI.getStudentById).not.toHaveBeenCalled();
+            expect(
+                cacheService
+            ).toHaveBeenCalledWith(
+                `student:${studentId}`,
+                120,
+                expect.any(Function)
+            );
 
             expect(result).toEqual(student);
         });

@@ -2,6 +2,7 @@ const axiosAPI = require("../controller/queryHelpers");
 const {
     redisClient
 } = require("../config/redisClient");
+const redisCacheService = require('../cache/cacheService');
 
 
 async function updateStudentSubject(
@@ -23,34 +24,11 @@ async function updateStudentSubject(
 
 async function getStudentById(id) {
 
-    const cacheKey = `student:${id}`;
-
-    const cachedStudent =
-        await redisClient.get(cacheKey);
-
-    if (cachedStudent) {
-
-        console.log("STUDENT CACHE HIT");
-
-        return JSON.parse(cachedStudent);
-    }
-
-    console.log("STUDENT CACHE MISS");
-
-    const student =
-        await axiosAPI.getStudentById(id);
-
-    if (!student) {
-        return null;
-    }
-
-    await redisClient.setEx(
-        cacheKey,
-        120,
-        JSON.stringify(student)
-    );
-
-    return student;
+    return redisCacheService(
+            `student:${id}`,
+            120,
+            () => axiosAPI.getStudentById(id)
+        );
 }
 
 async function getAllStudents() {
